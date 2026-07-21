@@ -113,6 +113,7 @@ wss.on('connection', (sock) => {
       }
       case 'leaveLobby': { removeFromLobby(sock); break; }
       case 'backToLobby': { lobbyClients.add(sock); send(sock, { type: 'roomList', rooms: publicRoomList() }); break; }
+      case 'ping': { send(sock, { type: 'pong' }); break; }
       // Generic relay: anything else (team pick, player input, ball state, goals, chat...)
       // just gets forwarded verbatim to whichever socket is the OTHER player in the room.
       default: {
