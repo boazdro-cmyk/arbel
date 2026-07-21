@@ -74,6 +74,7 @@ wss.on('connection', (sock) => {
 
     switch (msg.type) {
       case 'createRoom': {
+        if (sock.room) { closeRoom(sock.room, 'Host started a new room.'); }
         removeFromLobby(sock);
         const id = crypto.randomBytes(6).toString('hex');
         const isPrivate = !!msg.isPrivate;
@@ -100,6 +101,7 @@ wss.on('connection', (sock) => {
           room = rooms.get(msg.id);
           if (!room || room.state !== 'waiting') { send(sock, { type: 'joinError', reason: 'That room is no longer available.' }); return; }
         } else { return; }
+        if (sock.room && sock.room !== room) { closeRoom(sock.room, 'Player left to join another room.'); }
         removeFromLobby(sock);
         room.guestSocket = sock; room.guestName = (msg.playerName || 'Guest').slice(0, 16);
         room.state = 'full';
